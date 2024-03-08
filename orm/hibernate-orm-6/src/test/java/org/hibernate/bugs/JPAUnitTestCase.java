@@ -17,7 +17,19 @@ public class JPAUnitTestCase
     private BookRepository bookRepository;
 
     @Test
-    public void testRepoSave() {
+    public void hhh17827Test() {
+        Book b1 = new Book("Book B");
+        testEntity.persistAndFlush(b1);
+
+        Long savedBookID = b1.getId();
+        Book book = testEntity.find(Book.class, savedBookID);
+
+        assertEquals(savedBookID, book.getId());
+        assertEquals("Book B", book.getTitle());
+    }
+
+    @Test
+    public void hhh17827_2Test() {
         Book b1 = new Book("Book A");
         bookRepository.save(b1);
 
@@ -26,18 +38,5 @@ public class JPAUnitTestCase
 
         assertEquals(savedBookID, book.getId());
         assertEquals("Book A", book.getTitle());
-    }
-
-    @Test
-    public void testEntitySave() {
-        Book b1 = new Book("Book B");
-        testEntity.persistAndFlush(b1);
-
-        Long savedBookID = b1.getId();
-        Book book = testEntity.find(Book.class, savedBookID);
-        // Book book = testEM.find(Book.class, savedBookID);
-
-        assertEquals(savedBookID, book.getId());
-        assertEquals("Book B", book.getTitle());
     }
 }
