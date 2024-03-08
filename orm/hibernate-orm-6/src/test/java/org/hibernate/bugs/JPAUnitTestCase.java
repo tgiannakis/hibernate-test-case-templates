@@ -1,38 +1,43 @@
 package org.hibernate.bugs;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-/**
- * This template demonstrates how to develop a test case for Hibernate ORM, using the Java Persistence API.
- */
-public class JPAUnitTestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-	private EntityManagerFactory entityManagerFactory;
+@DataJpaTest
+public class JPAUnitTestCase
+{
+    @Autowired
+    private TestEntityManager testEntity;
+    @Autowired
+    private BookRepository bookRepository;
 
-	@Before
-	public void init() {
-		entityManagerFactory = Persistence.createEntityManagerFactory( "templatePU" );
-	}
+    @Test
+    public void testRepoSave() {
+        Book b1 = new Book("Book A");
+        bookRepository.save(b1);
 
-	@After
-	public void destroy() {
-		entityManagerFactory.close();
-	}
+        Long savedBookID = b1.getId();
+        Book book = bookRepository.findById(savedBookID).orElseThrow();
 
-	// Entities are auto-discovered, so just add them anywhere on class-path
-	// Add your tests, using standard JUnit.
-	@Test
-	public void hhh123Test() throws Exception {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		entityManager.getTransaction().begin();
-		// Do stuff...
-		entityManager.getTransaction().commit();
-		entityManager.close();
-	}
+        assertEquals(savedBookID, book.getId());
+        assertEquals("Book A", book.getTitle());
+    }
+
+    @Test
+    public void testEntitySave() {
+        Book b1 = new Book("Book B");
+        testEntity.persistAndFlush(b1);
+
+        Long savedBookID = b1.getId();
+        Book book = testEntity.find(Book.class, savedBookID);
+        // Book book = testEM.find(Book.class, savedBookID);
+
+        assertEquals(savedBookID, book.getId());
+        assertEquals("Book B", book.getTitle());
+    }
 }
