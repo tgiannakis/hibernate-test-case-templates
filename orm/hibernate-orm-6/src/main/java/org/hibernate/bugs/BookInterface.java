@@ -15,7 +15,7 @@ import java.util.Set;
 
 
 public interface BookInterface
-//	extends Map<String, Object> // Comment this line to fix the tests.
+	extends Map<String, Object> // Comment this line to fix the tests.
 {
 	// Map dummy implementation.
 	default int size()
